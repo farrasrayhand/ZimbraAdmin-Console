@@ -1,41 +1,114 @@
 <%- include('../partials/header') %>
 
-<div class="page-header">
-  <div class="header-title-group">
-    <h2>Mail Queue Monitor</h2>
-    <span class="badge badge-warning"><%= queue.total %> Total Email</span>
+<div class="detail-page-container">
+  <!-- Page Header -->
+  <div class="form-page-header" style="margin-bottom: 28px;">
+    <div class="header-title-with-badge">
+      <div class="form-title-group">
+        <h2>Mail Queue Monitor</h2>
+        <p class="text-muted">Pantau status antrean pengiriman email (Postfix MTA) dan paksa pengiriman ulang</p>
+      </div>
+      <div class="queue-total-pill">
+        <span class="pulse-dot"></span>
+        <span><strong><%= queue.total %></strong> Total Dalam Antrean</span>
+      </div>
+    </div>
   </div>
-</div>
 
-<!-- Queue Summary Cards -->
-<div class="queue-grid">
-  <div class="queue-card card-active">
-    <span class="queue-count"><%= queue.active %></span>
-    <span class="queue-label">Active</span>
+  <!-- Status Bar & Refresh Action -->
+  <div class="queue-status-bar">
+    <div class="status-live-indicator">
+      <span class="live-dot"></span>
+      <span class="live-text">MTA Mail Queue Engine Active</span>
+    </div>
+    <button type="button" class="btn btn-secondary btn-sm btn-refresh-queue" onclick="location.reload()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="23 4 23 10 17 10"></polyline>
+        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+      </svg>
+      <span>Segarkan Status</span>
+    </button>
   </div>
-  <div class="queue-card card-deferred">
-    <span class="queue-count"><%= queue.deferred %></span>
-    <span class="queue-label">Deferred (Tertahan)</span>
-  </div>
-  <div class="queue-card card-hold">
-    <span class="queue-count"><%= queue.hold %></span>
-    <span class="queue-label">Hold</span>
-  </div>
-</div>
 
-<!-- Queue Actions -->
-<div class="section">
-  <div class="card form-card">
-    <h3>Flush Mail Queue</h3>
-    <p class="text-muted" style="font-size:13px; margin-bottom:14px; line-height:1.5;">
-      Menjalankan flush antrean email akan memaksa MTA Zimbra untuk mencoba mengirimkan ulang semua email dalam status Deferred ke server tujuan.
-    </p>
+  <!-- Queue Metrics Grid -->
+  <div class="queue-metrics-grid">
+    <!-- Active Queue -->
+    <div class="queue-metric-card metric-active">
+      <div class="metric-header">
+        <span class="metric-icon">📨</span>
+        <span class="metric-tag tag-green">Proses Pengiriman</span>
+      </div>
+      <div class="metric-value"><%= queue.active %></div>
+      <div class="metric-label">Active Queue</div>
+      <p class="metric-desc">Email sedang dikirim aktif oleh MTA Zimbra.</p>
+    </div>
 
-    <form method="POST" action="/queue/flush">
-      <button type="submit" class="btn btn-primary btn-block btn-lg" onclick="return confirm('Proses flush antrean mail sekarang?')">
-        ⚡ Flush Mail Queue Sekarang
-      </button>
-    </form>
+    <!-- Deferred Queue -->
+    <div class="queue-metric-card metric-deferred">
+      <div class="metric-header">
+        <span class="metric-icon">⏳</span>
+        <span class="metric-tag tag-amber">Tertahan</span>
+      </div>
+      <div class="metric-value"><%= queue.deferred %></div>
+      <div class="metric-label">Deferred Queue</div>
+      <p class="metric-desc">Gagal sementara (greylisting/server tujuan sibuk).</p>
+    </div>
+
+    <!-- Hold Queue -->
+    <div class="queue-metric-card metric-hold">
+      <div class="metric-header">
+        <span class="metric-icon">🔒</span>
+        <span class="metric-tag tag-purple">Ditahan Admin</span>
+      </div>
+      <div class="metric-value"><%= queue.hold %></div>
+      <div class="metric-label">Hold Queue</div>
+      <p class="metric-desc">Email yang ditahan secara manual oleh administrator.</p>
+    </div>
+
+    <!-- Incoming & Corrupt Queue -->
+    <div class="queue-metric-card metric-corrupt">
+      <div class="metric-header">
+        <span class="metric-icon">📦</span>
+        <span class="metric-tag tag-slate">Antrean Masuk</span>
+      </div>
+      <div class="metric-value"><%= (queue.incoming || 0) + (queue.corrupt || 0) %></div>
+      <div class="metric-label">Incoming / Corrupt</div>
+      <p class="metric-desc">Email baru masuk atau antrean yang rusak.</p>
+    </div>
+  </div>
+
+  <!-- Flush Action Card -->
+  <div class="section" style="margin-top: 32px;">
+    <div class="queue-flush-card">
+      <div class="flush-card-header">
+        <div class="flush-icon-glow">⚡</div>
+        <div class="flush-header-text">
+          <h3>Flush & Retransmit Mail Queue</h3>
+          <p>Memaksa server MTA Zimbra untuk memicu pengiriman ulang (*postqueue -f*) secara langsung pada seluruh email yang tertahan di antrean Deferred.</p>
+        </div>
+      </div>
+
+      <form method="POST" action="/queue/flush" class="flush-form" onsubmit="return confirm('Apakah Anda yakin ingin memicu Flush Mail Queue sekarang?')">
+        <button type="submit" class="btn btn-primary btn-lg btn-flush-action">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+          <span>Paksa Flush & Kirim Ulang Antrean Email</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Help & Troubleshooting Info -->
+  <div class="section" style="margin-top: 24px;">
+    <div class="queue-help-card">
+      <div class="help-card-title">💡 Petunjuk Penanganan Antrean Mail (Queue)</div>
+      <ul class="help-list">
+        <li><strong>Active Queue:</strong> Email yang berada pada tahap ini sedang dalam proses negosiasi koneksi SMTP dengan mail server penerima.</li>
+        <li><strong>Deferred Queue:</strong> Jika email berada di antrean ini, berarti server penerima menolak sementara (Greylisting, Network Timeout, Rate Limit). Memicu <em>Flush</em> akan mencoba ulang tanpa menunggu timer default Zimbra (tiap 5-15 menit).</li>
+        <li><strong>Jika Deferred Terlalu Banyak:</strong> Periksa konektivitas Port 25 Outbound server VPS/Hosting Anda atau pastikan reputasi IP server tidak masuk ke RBL/Blocklist.</li>
+      </ul>
+    </div>
   </div>
 </div>
 
