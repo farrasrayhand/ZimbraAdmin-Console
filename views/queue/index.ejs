@@ -1,0 +1,42 @@
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <div class="header-title-group">
+    <h2>Mail Queue Monitor</h2>
+    <span class="badge badge-warning"><%= queue.total %> Total Email</span>
+  </div>
+</div>
+
+<!-- Queue Summary Cards -->
+<div class="queue-grid">
+  <div class="queue-card card-active">
+    <span class="queue-count"><%= queue.active %></span>
+    <span class="queue-label">Active</span>
+  </div>
+  <div class="queue-card card-deferred">
+    <span class="queue-count"><%= queue.deferred %></span>
+    <span class="queue-label">Deferred (Tertahan)</span>
+  </div>
+  <div class="queue-card card-hold">
+    <span class="queue-count"><%= queue.hold %></span>
+    <span class="queue-label">Hold</span>
+  </div>
+</div>
+
+<!-- Queue Actions -->
+<div class="section">
+  <div class="card form-card">
+    <h3>Flush Mail Queue</h3>
+    <p class="text-muted" style="font-size:13px; margin-bottom:14px; line-height:1.5;">
+      Menjalankan flush antrean email akan memaksa MTA Zimbra untuk mencoba mengirimkan ulang semua email dalam status Deferred ke server tujuan.
+    </p>
+
+    <form method="POST" action="/queue/flush">
+      <button type="submit" class="btn btn-primary btn-block btn-lg" onclick="return confirm('Proses flush antrean mail sekarang?')">
+        ⚡ Flush Mail Queue Sekarang
+      </button>
+    </form>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

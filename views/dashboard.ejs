@@ -1,0 +1,171 @@
+<%- include('partials/header') %>
+
+<div class="dashboard-hero">
+  <div class="hero-greeting">
+    <h2>Halo, Administrator 👋</h2>
+    <p class="text-muted"><%= user.username %></p>
+  </div>
+</div>
+
+<!-- Quick Search Box -->
+<div class="search-box mobile-search-box">
+  <form action="/accounts" method="GET">
+    <div class="search-input-group">
+      <span class="search-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </span>
+      <input type="text" name="q" placeholder="Cari email, nama, atau domain..." autocomplete="off">
+      <button type="submit" class="btn btn-primary">Cari</button>
+    </div>
+  </form>
+</div>
+
+<!-- Stats Overview Grid -->
+<div class="stats-grid">
+  <a href="/accounts" class="stat-card">
+    <div class="stat-icon icon-blue">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+        <circle cx="9" cy="7" r="4"></circle>
+        <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+      </svg>
+    </div>
+    <div class="stat-info">
+      <span class="stat-value"><%= totalAccounts %></span>
+      <span class="stat-label">Total Akun</span>
+    </div>
+  </a>
+
+  <a href="/queue" class="stat-card">
+    <div class="stat-icon icon-orange">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline>
+        <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path>
+      </svg>
+    </div>
+    <div class="stat-info">
+      <span class="stat-value"><%= mailQueue.total %></span>
+      <span class="stat-label">Mail Queue</span>
+    </div>
+  </a>
+
+  <a href="/domains" class="stat-card">
+    <div class="stat-icon icon-purple">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="2" y1="12" x2="22" y2="12"></line>
+        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+      </svg>
+    </div>
+    <div class="stat-info">
+      <span class="stat-value"><%= domains.length %></span>
+      <span class="stat-label">Domain Active</span>
+    </div>
+  </a>
+
+  <div class="stat-card">
+    <div class="stat-icon icon-green">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+      </svg>
+    </div>
+    <div class="stat-info">
+      <span class="stat-value"><%= serviceStatus.filter(s => s.status === 'running').length %> / <%= serviceStatus.length || 4 %></span>
+      <span class="stat-label">Services Active</span>
+    </div>
+  </div>
+</div>
+
+<!-- Quick Shortcuts -->
+<div class="section">
+  <div class="section-title-row">
+    <h3>Aksi Cepat</h3>
+  </div>
+  <div class="quick-shortcuts-grid">
+    <a href="/accounts/create" class="shortcut-card">
+      <div class="shortcut-icon">+</div>
+      <span>Buat Akun</span>
+    </a>
+    <a href="/accounts" class="shortcut-card">
+      <div class="shortcut-icon">👥</div>
+      <span>Kelola Akun</span>
+    </a>
+    <a href="/queue" class="shortcut-card">
+      <div class="shortcut-icon">📥</div>
+      <span>Cek Queue</span>
+    </a>
+    <a href="/domains" class="shortcut-card">
+      <div class="shortcut-icon">🌐</div>
+      <span>Domain & COS</span>
+    </a>
+  </div>
+</div>
+
+<!-- Server Services Health -->
+<div class="section">
+  <div class="section-title-row">
+    <h3>Status Layanan Server</h3>
+    <span class="badge badge-success">Live</span>
+  </div>
+  <div class="services-list">
+    <% if (serviceStatus && serviceStatus.length > 0) { %>
+      <% serviceStatus.forEach(svc => { %>
+      <div class="service-item">
+        <div class="service-info">
+          <span class="service-name"><%= svc.service.toUpperCase() %></span>
+          <span class="text-muted"><%= svc.server || 'Local Server' %></span>
+        </div>
+        <span class="status-badge <%= svc.status === 'running' ? 'status-active' : 'status-stopped' %>">
+          <span class="dot"></span> <%= svc.status === 'running' ? 'Aktif' : 'Mogok' %>
+        </span>
+      </div>
+      <% }); %>
+    <% } else { %>
+      <div class="service-item">
+        <div class="service-info">
+          <span class="service-name">MTA & Mailbox Service</span>
+          <span class="text-muted">Local Server</span>
+        </div>
+        <span class="status-badge status-active">
+          <span class="dot"></span> Normal
+        </span>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<!-- Class of Service (COS) -->
+<% if (cosList && cosList.length > 0) { %>
+<div class="section">
+  <div class="section-title-row">
+    <h3>Class of Service (COS) Server</h3>
+    <span class="badge"><%= cosList.length %> COS Active</span>
+  </div>
+  <div class="cos-grid-dashboard">
+    <% cosList.forEach(cos => { %>
+    <div class="cos-card-dash">
+      <div class="cos-dash-header">
+        <div class="cos-icon">🛡️</div>
+        <div class="cos-dash-info">
+          <strong class="cos-dash-name"><%= cos.name %></strong>
+          <% if (cos.attrs.description) { %>
+            <span class="text-muted text-xs"><%= cos.attrs.description %></span>
+          <% } %>
+        </div>
+      </div>
+      <div class="cos-dash-footer">
+        <span class="cos-quota-tag">
+          💾 Storage: <%= cos.attrs.zimbraMailQuota ? (parseInt(cos.attrs.zimbraMailQuota) / 1048576).toFixed(0) + ' MB' : 'Unlimited' %>
+        </span>
+      </div>
+    </div>
+    <% }); %>
+  </div>
+</div>
+<% } %>
+
+<%- include('partials/footer') %>

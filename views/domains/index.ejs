@@ -1,0 +1,63 @@
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <div class="header-title-group">
+    <h2>Domain & COS</h2>
+    <span class="badge"><%= domains.length %> Domain</span>
+  </div>
+</div>
+
+<!-- Domains Section -->
+<div class="section">
+  <h3>Daftar Domain Active</h3>
+  <div class="domain-grid">
+    <% if (domains && domains.length > 0) { %>
+      <% domains.forEach(domain => { %>
+        <a href="/accounts?domain=<%= encodeURIComponent(domain.name) %>" class="domain-card">
+          <div class="domain-icon">🌐</div>
+          <div class="domain-info">
+            <div class="domain-name"><%= domain.name %></div>
+            <span class="text-muted text-xs">Klik untuk lihat akun domain ini &rsaquo;</span>
+          </div>
+        </a>
+      <% }); %>
+    <% } else { %>
+      <div class="empty-state card">
+        <p class="text-muted">Tidak ada domain terdeteksi.</p>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<!-- Class of Service Section -->
+<div class="section">
+  <h3>Class of Service (COS)</h3>
+  <div class="cos-list-container">
+    <% if (cosList && cosList.length > 0) { %>
+      <% cosList.forEach(cos => { %>
+        <div class="cos-card">
+          <div class="cos-header">
+            <span class="cos-badge">COS</span>
+            <strong class="cos-title"><%= cos.name %></strong>
+          </div>
+          <% if (cos.attrs) { %>
+            <div class="cos-attrs">
+              <% if (cos.attrs.zimbraMailQuota) { %>
+                <span class="cos-tag">Quota: <%= (parseInt(cos.attrs.zimbraMailQuota) / 1048576).toFixed(0) %> MB</span>
+              <% } %>
+              <% if (cos.attrs.description) { %>
+                <span class="text-muted"><%= cos.attrs.description %></span>
+              <% } %>
+            </div>
+          <% } %>
+        </div>
+      <% }); %>
+    <% } else { %>
+      <div class="empty-state card">
+        <p class="text-muted">Tidak ada Class of Service ditemukan.</p>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

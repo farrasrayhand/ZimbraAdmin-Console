@@ -1,0 +1,283 @@
+<%- include('../partials/header') %>
+
+<div class="accounts-page-wrapper">
+  <!-- Page Header -->
+  <div class="page-header-row">
+    <div class="page-header-title">
+      <h2>Daftar Akun Email</h2>
+      <span class="total-count-pill"><%= total %> Akun</span>
+    </div>
+    <a href="/accounts/create" class="btn btn-primary btn-create-acct">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
+      <span>+ Akun Baru</span>
+    </a>
+  </div>
+
+  <!-- Search & Filter Console Card -->
+  <div class="filter-console-card">
+    <form action="/accounts" method="GET" class="filter-form-grid">
+      <div class="search-input-unified">
+        <span class="search-prefix-icon">🔍</span>
+        <input type="text" name="q" placeholder="Cari email atau nama..." value="<%= query %>" autocomplete="off" class="unified-search-input">
+        <% if (query) { %>
+          <a href="/accounts" class="btn-clear-search-icon" title="Hapus Kata Kunci">×</a>
+        <% } %>
+        <button type="submit" class="btn btn-primary btn-search-action">Cari</button>
+      </div>
+
+      <div class="filter-dropdowns-group">
+        <% if (domains && domains.length > 0) { %>
+          <div class="select-filter-wrapper">
+            <select name="domain" class="filter-dropdown-select" onchange="this.form.submit()">
+              <option value="">Semua Domain</option>
+              <% domains.forEach(d => { %>
+                <option value="<%= d.name %>" <%= domainFilter === d.name ? 'selected' : '' %>><%= d.name %></option>
+              <% }); %>
+            </select>
+          </div>
+        <% } %>
+
+        <div class="select-filter-wrapper">
+          <select name="status" class="filter-dropdown-select" onchange="this.form.submit()">
+            <option value="">Semua Status</option>
+            <option value="active" <%= statusFilter === 'active' ? 'selected' : '' %>>🟢 Active</option>
+            <option value="locked" <%= statusFilter === 'locked' ? 'selected' : '' %>>🔴 Locked</option>
+            <option value="closed" <%= statusFilter === 'closed' ? 'selected' : '' %>>⚫ Closed</option>
+            <option value="maintenance" <%= statusFilter === 'maintenance' ? 'selected' : '' %>>🟠 Maintenance</option>
+          </select>
+        </div>
+
+        <% if (query || domainFilter || statusFilter) { %>
+          <a href="/accounts" class="btn-reset-pill">Reset</a>
+        <% } %>
+      </div>
+    </form>
+  </div>
+
+  <!-- Active Search & Filter Chips Bar -->
+  <% if (query || domainFilter || statusFilter) { %>
+    <div class="active-search-bar">
+      <div class="active-search-info">
+        <span class="search-label-text">Hasil Pencarian:</span>
+        <div class="search-chips-list">
+          <% if (query) { %>
+            <span class="search-chip">
+              🔍 "<%= query %>"
+              <a href="?domain=<%= domainFilter %>&status=<%= statusFilter %>" class="chip-remove">×</a>
+            </span>
+          <% } %>
+          <% if (domainFilter) { %>
+            <span class="search-chip">
+              🌐 <%= domainFilter %>
+              <a href="?q=<%= encodeURIComponent(query) %>&status=<%= statusFilter %>" class="chip-remove">×</a>
+            </span>
+          <% } %>
+          <% if (statusFilter) { %>
+            <span class="search-chip">
+              ⚡ <%= statusFilter.toUpperCase() %>
+              <a href="?q=<%= encodeURIComponent(query) %>&domain=<%= domainFilter %>" class="chip-remove">×</a>
+            </span>
+          <% } %>
+        </div>
+      </div>
+      <a href="/accounts" class="btn-clear-all-filters">Hapus Filter ×</a>
+    </div>
+  <% } %>
+
+  <!-- Accounts Content: Desktop Table & Mobile Cards -->
+  <div class="account-list-container">
+    <% if (accounts.length === 0) { %>
+      <div class="empty-search-card">
+        <div class="empty-search-icon">🔍</div>
+        <h3>Tidak Ada Akun Ditemukan</h3>
+        <% if (query) { %>
+          <p class="empty-search-desc">Tidak ditemukan akun yang cocok dengan kata kunci <strong>"<%= query %>"</strong>.</p>
+        <% } else { %>
+          <p class="empty-search-desc">Tidak ada akun yang sesuai dengan kriteria filter yang dipilih.</p>
+        <% } %>
+        <div class="empty-search-actions">
+          <a href="/accounts" class="btn btn-primary">Reset Pencarian & Filter</a>
+          <a href="/accounts/create" class="btn btn-secondary">+ Buat Akun Baru</a>
+        </div>
+      </div>
+    <% } else { %>
+      <!-- Desktop Table View (min-width: 768px) -->
+      <div class="accounts-table-view desktop-only">
+        <table class="enterprise-table">
+          <thead>
+            <tr>
+              <th>Akun Email / Nama</th>
+              <th>Status</th>
+              <th>Penggunaan Storage</th>
+              <th style="text-align: right;">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% accounts.forEach(account => { %>
+              <tr>
+                <td>
+                  <div class="table-user-cell">
+                    <div class="table-avatar">
+                      <%= account.name.charAt(0).toUpperCase() %>
+                    </div>
+                    <div class="table-user-info">
+                      <a href="/accounts/<%= encodeURIComponent(account.name) %>" class="table-user-email"><%= account.name %></a>
+                      <span class="table-user-name"><%= account.displayName || account.name %></span>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <span class="status-badge status-<%= account.status || 'active' %>">
+                    <%= (account.status || 'active').toUpperCase() %>
+                  </span>
+                </td>
+                <td>
+                  <div class="table-storage-cell">
+                    <span class="storage-text">
+                      <strong><%= account.usedQuotaMB %> MB</strong> <%= account.quotaMB > 0 ? '/ ' + account.quotaMB + ' MB' : '(COS)' %>
+                    </span>
+                  </div>
+                </td>
+                <td style="text-align: right;">
+                  <a href="/accounts/<%= encodeURIComponent(account.name) %>" class="btn btn-secondary btn-sm">Kelola &rsaquo;</a>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mobile Cards View (max-width: 767px) -->
+      <div class="accounts-cards-view mobile-only">
+        <% accounts.forEach(account => { %>
+          <a href="/accounts/<%= encodeURIComponent(account.name) %>" class="account-card">
+            <div class="account-avatar">
+              <%= account.name.charAt(0).toUpperCase() %>
+            </div>
+            <div class="account-info">
+              <div class="account-email"><%= account.name %></div>
+              <div class="account-sub-row">
+                <span class="account-name text-muted"><%= account.displayName || account.name %></span>
+                <span class="account-quota-pill">
+                  💾 <%= account.usedQuotaMB %> MB <%= account.quotaMB > 0 ? '/ ' + account.quotaMB + ' MB' : '(COS)' %>
+                </span>
+              </div>
+            </div>
+            <div class="account-meta">
+              <span class="status-badge status-<%= account.status || 'active' %>">
+                <%= (account.status || 'active').toUpperCase() %>
+              </span>
+              <span class="arrow">&rsaquo;</span>
+            </div>
+          </a>
+        <% }); %>
+      </div>
+
+      <!-- Modern App & Desktop Responsive Pagination -->
+      <% const startItem = (page - 1) * limit + 1; %>
+      <% const endItem = Math.min(page * limit, total); %>
+      <div class="app-pagination">
+        <div class="pagination-header-row">
+          <span class="pagination-counter-text">
+            Menampilkan <strong><%= accounts.length > 0 ? startItem : 0 %>-<%= endItem %></strong> dari <strong><%= total %></strong> akun (Halaman <strong><%= page %></strong> dari <strong><%= totalPages %></strong>)
+          </span>
+          <div class="pagination-limit-picker">
+            <label for="limitSelect" class="limit-label">Per Halaman:</label>
+            <select id="limitSelect" onchange="changeLimit(this.value)" class="limit-select-pill">
+              <option value="20" <%= limit === 20 ? 'selected' : '' %>>20</option>
+              <option value="50" <%= limit === 50 ? 'selected' : '' %>>50</option>
+              <option value="100" <%= limit === 100 ? 'selected' : '' %>>100</option>
+              <option value="250" <%= limit === 250 ? 'selected' : '' %>>250</option>
+              <option value="500" <%= limit === 500 ? 'selected' : '' %>>500</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="pagination-nav-bar">
+          <!-- Left Controls: First & Prev -->
+          <div class="pg-nav-group pg-nav-left">
+            <% if (page > 1) { %>
+              <a href="?q=<%= encodeURIComponent(query) %>&domain=<%= domainFilter %>&status=<%= statusFilter %>&limit=<%= limit %>&page=1" class="pg-btn pg-btn-icon" title="Halaman Pertama (1)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="11 17 6 12 11 7"></polyline><polyline points="18 17 13 12 18 7"></polyline></svg>
+              </a>
+              <a href="?q=<%= encodeURIComponent(query) %>&domain=<%= domainFilter %>&status=<%= statusFilter %>&limit=<%= limit %>&page=<%= page - 1 %>" class="pg-btn pg-btn-icon" title="Halaman Sebelumnya">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+              </a>
+            <% } else { %>
+              <button class="pg-btn pg-btn-icon" disabled>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="11 17 6 12 11 7"></polyline><polyline points="18 17 13 12 18 7"></polyline></svg>
+              </button>
+              <button class="pg-btn pg-btn-icon" disabled>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+              </button>
+            <% } %>
+          </div>
+
+          <!-- Numbered Page Pills (Desktop) -->
+          <div class="pg-numbers">
+            <%
+              let windowSize = 9;
+              let startPg = Math.max(1, page - Math.floor(windowSize / 2));
+              let endPg = Math.min(totalPages, startPg + windowSize - 1);
+              if (endPg - startPg < windowSize - 1) {
+                startPg = Math.max(1, endPg - windowSize + 1);
+              }
+            %>
+
+            <% if (startPg > 1) { %>
+              <a href="?q=<%= encodeURIComponent(query) %>&domain=<%= domainFilter %>&status=<%= statusFilter %>&limit=<%= limit %>&page=1" class="pg-num">1</a>
+              <% if (startPg > 2) { %><span class="pg-ellipsis">...</span><% } %>
+            <% } %>
+
+            <% for (let p = Math.max(1, startPg); p <= Math.min(totalPages, endPg); p++) { %>
+              <a href="?q=<%= encodeURIComponent(query) %>&domain=<%= domainFilter %>&status=<%= statusFilter %>&limit=<%= limit %>&page=<%= p %>" class="pg-num <%= p === page ? 'active' : '' %>">
+                <%= p %>
+              </a>
+            <% } %>
+
+            <% if (endPg < totalPages) { %>
+              <% if (endPg < totalPages - 1) { %><span class="pg-ellipsis">...</span><% } %>
+              <a href="?q=<%= encodeURIComponent(query) %>&domain=<%= domainFilter %>&status=<%= statusFilter %>&limit=<%= limit %>&page=<%= totalPages %>" class="pg-num"><%= totalPages %></a>
+            <% } %>
+          </div>
+
+          <!-- Mobile Page Counter Pill -->
+          <span class="mobile-pg-counter">Hal <%= page %> / <%= totalPages %></span>
+
+          <!-- Right Controls: Next & Last -->
+          <div class="pg-nav-group pg-nav-right">
+            <% if (page < totalPages || (typeof moreAccounts !== 'undefined' && moreAccounts)) { %>
+              <a href="?q=<%= encodeURIComponent(query) %>&domain=<%= domainFilter %>&status=<%= statusFilter %>&limit=<%= limit %>&page=<%= page + 1 %>" class="pg-btn pg-btn-icon pg-btn-primary" title="Halaman Selanjutnya">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </a>
+              <a href="?q=<%= encodeURIComponent(query) %>&domain=<%= domainFilter %>&status=<%= statusFilter %>&limit=<%= limit %>&page=<%= totalPages %>" class="pg-btn pg-btn-icon pg-btn-primary" title="Halaman Terakhir (<%= totalPages %>)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 17 18 12 13 7"></polyline><polyline points="6 17 11 12 6 7"></polyline></svg>
+              </a>
+            <% } else { %>
+              <button class="pg-btn pg-btn-icon" disabled>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </button>
+              <button class="pg-btn pg-btn-icon" disabled>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 17 18 12 13 7"></polyline><polyline points="6 17 11 12 6 7"></polyline></svg>
+              </button>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<script>
+function changeLimit(newLimit) {
+  const url = new URL(window.location.href);
+  url.searchParams.set('limit', newLimit);
+  url.searchParams.set('page', '1');
+  window.location.href = url.toString();
+}
+</script>
+
+<%- include('../partials/footer') %>

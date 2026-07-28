@@ -1,0 +1,279 @@
+<%- include('../partials/header') %>
+
+<div class="form-page-container">
+  <!-- Page Header & Back Button -->
+  <div class="form-page-header">
+    <a href="/accounts" class="btn-back-pill">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+      <span>Kembali</span>
+    </a>
+    <div class="form-title-group">
+      <h2>Buat Akun Email Baru</h2>
+      <p class="text-muted">Isi formulir berikut untuk membuat akun pengguna di server Zimbra</p>
+    </div>
+  </div>
+
+  <!-- Main Create Form Card -->
+  <div class="create-form-card">
+    <form method="POST" action="/accounts/create" id="createAccountForm">
+      <!-- Section 1: Identifier -->
+      <div class="form-section">
+        <div class="form-section-title">
+          <span class="step-num">1</span>
+          <span>Informasi Alamat Email & User</span>
+        </div>
+
+        <div class="form-group-enterprise">
+          <label for="name">Alamat Email Pengguna <span class="required-star">*</span></label>
+          <% if (domains && domains.length > 0) { %>
+            <div class="email-input-joined">
+              <span class="input-prefix-icon">📧</span>
+              <input type="text" id="name" name="name" placeholder="username" required autocomplete="off" class="joined-username-input">
+              <span class="joined-at-symbol">@</span>
+              <select name="domain" class="joined-domain-select" id="domainSelect">
+                <% domains.forEach(d => { %>
+                  <option value="<%= d.name %>"><%= d.name %></option>
+                <% }); %>
+              </select>
+            </div>
+          <% } else { %>
+            <div class="input-icon-wrapper">
+              <span class="input-icon">📧</span>
+              <input type="email" id="name" name="name" placeholder="user@domain.com" required autocomplete="off">
+            </div>
+          <% } %>
+        </div>
+
+        <!-- Structured Name Fields Grid -->
+        <div class="name-fields-grid">
+          <div class="form-group-enterprise">
+            <label for="givenName">Nama Depan (First Name)</label>
+            <div class="input-icon-wrapper">
+              <span class="input-icon">👤</span>
+              <input type="text" id="givenName" name="givenName" placeholder="Contoh: Budi" autocomplete="off" oninput="autoComputeDisplayName()">
+            </div>
+          </div>
+
+          <div class="form-group-enterprise">
+            <label for="initials">Nama Tengah (Middle Name)</label>
+            <div class="input-icon-wrapper">
+              <span class="input-icon">🔤</span>
+              <input type="text" id="initials" name="initials" placeholder="Contoh: Setiawan" maxlength="50" autocomplete="off" oninput="autoComputeDisplayName()">
+            </div>
+          </div>
+
+          <div class="form-group-enterprise">
+            <label for="sn">Nama Belakang (Last Name) <span class="required-star">*</span></label>
+            <div class="input-icon-wrapper">
+              <span class="input-icon">📛</span>
+              <input type="text" id="sn" name="sn" placeholder="Contoh: Pratama" required autocomplete="off" oninput="autoComputeDisplayName()">
+            </div>
+          </div>
+        </div>
+        <span class="hint-text" style="margin-top:-14px; margin-bottom:20px; display:block;">Catatan: Nama belakang (Last Name / sn) wajib diisi sesuai atribut Zimbra LDAP.</span>
+
+        <div class="form-group-enterprise">
+          <label for="displayName">Nama Tampilan (Display Name)</label>
+          <div class="input-icon-wrapper">
+            <span class="input-icon">🏷️</span>
+            <input type="text" id="displayName" name="displayName" placeholder="Otomatis digabung dari Nama Depan + Inisial + Belakang" autocomplete="off">
+          </div>
+          <span class="hint-text">Dapat disesuaikan jika ingin format tampilan yang berbeda.</span>
+        </div>
+      </div>
+
+      <!-- Section 2: Security & Class of Service -->
+      <div class="form-section">
+        <div class="form-section-title">
+          <span class="step-num">2</span>
+          <span>Keamanan & Class of Service (COS)</span>
+        </div>
+
+        <div class="form-group-enterprise">
+          <label for="password">Password Akun <span class="required-star">*</span></label>
+          <div class="password-group-row">
+            <div class="input-icon-wrapper flex-1">
+              <span class="input-icon">🔒</span>
+              <input type="password" id="password" name="password" placeholder="Minimal 6 karakter" required minlength="6" oninput="validatePasswordPolicy()">
+              <button type="button" class="btn-input-action" onclick="togglePasswordVisibility('password')" title="Tampilkan Password">👁️</button>
+            </div>
+            <button type="button" class="btn btn-secondary btn-generate-pill" onclick="generateRandomPw()">
+              🎲 Acak Password
+            </button>
+          </div>
+
+          <!-- Real-Time Password Policy Checklist -->
+          <div class="pw-policy-checklist" id="pwPolicyChecklist">
+            <span class="policy-badge policy-invalid" id="ruleMin">🔴 Min 6 Karakter</span>
+            <span class="policy-badge policy-invalid" id="ruleUpper">🔴 Huruf Besar (A-Z)</span>
+            <span class="policy-badge policy-invalid" id="ruleLower">🔴 Huruf Kecil (a-z)</span>
+            <span class="policy-badge policy-invalid" id="ruleDigit">🔴 Angka (0-9)</span>
+            <span class="policy-badge policy-invalid" id="rulePunctuation">🔴 Simbol (!@#$)</span>
+          </div>
+          <span class="hint-text" id="pwErrorMsg" style="color:var(--danger); font-weight:700; display:none; margin-top:6px;"></span>
+        </div>
+
+        <div class="form-group-enterprise">
+          <label class="custom-checkbox">
+            <input type="checkbox" id="mustChangePassword" name="mustChangePassword" value="TRUE">
+            <span class="checkmark"></span>
+            <span class="checkbox-text">Wajibkan Pengguna Mengubah Password Saat Login Pertama (zimbraPasswordMustChange)</span>
+          </label>
+        </div>
+
+        <% if (cosList && cosList.length > 0) { %>
+        <div class="form-group-enterprise">
+          <label for="cosId">Class of Service (COS)</label>
+          <div class="input-icon-wrapper">
+            <span class="input-icon">🛡️</span>
+            <select name="cosId" id="cosId" class="form-control-select">
+              <option value="">Ikuti Default Server</option>
+              <% cosList.forEach(cos => { %>
+                <option value="<%= cos.id %>">
+                  <%= cos.name %> <%= cos.attrs.zimbraMailQuota ? '(' + (parseInt(cos.attrs.zimbraMailQuota) / 1048576).toFixed(0) + ' MB)' : '(Unlimited)' %>
+                </option>
+              <% }); %>
+            </select>
+          </div>
+          <span class="hint-text">Alokasi kuota storage & fitur pengguna ditentukan oleh COS.</span>
+        </div>
+        <% } %>
+      </div>
+
+      <!-- Submit & Cancel Actions -->
+      <div class="form-actions-row">
+        <button type="submit" class="btn btn-primary btn-lg btn-submit-create">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <line x1="19" y1="8" x2="19" y2="14"></line>
+            <line x1="16" y1="11" x2="22" y2="11"></line>
+          </svg>
+          <span>Buat Akun Sekarang</span>
+        </button>
+        <a href="/accounts" class="btn btn-secondary btn-lg">Batal</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+function generateRandomPw() {
+  const uppers = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const lowers = 'abcdefghijklmnopqrstuvwxyz';
+  const digits = '0123456789';
+  const symbols = '!@#$%^&*';
+  
+  let pw = '';
+  pw += uppers.charAt(Math.floor(Math.random() * uppers.length));
+  pw += uppers.charAt(Math.floor(Math.random() * uppers.length));
+  pw += lowers.charAt(Math.floor(Math.random() * lowers.length));
+  pw += lowers.charAt(Math.floor(Math.random() * lowers.length));
+  pw += digits.charAt(Math.floor(Math.random() * digits.length));
+  pw += digits.charAt(Math.floor(Math.random() * digits.length));
+  pw += symbols.charAt(Math.floor(Math.random() * symbols.length));
+  pw += symbols.charAt(Math.floor(Math.random() * symbols.length));
+  
+  const all = uppers + lowers + digits + symbols;
+  for (let i = 0; i < 4; i++) {
+    pw += all.charAt(Math.floor(Math.random() * all.length));
+  }
+  
+  pw = pw.split('').sort(() => 0.5 - Math.random()).join('');
+  
+  const input = document.getElementById('password');
+  input.type = 'text';
+  input.value = pw;
+  validatePasswordPolicy();
+}
+
+function togglePasswordVisibility(id) {
+  const input = document.getElementById(id);
+  if (input) {
+    input.type = input.type === 'password' ? 'text' : 'password';
+  }
+}
+
+function validatePasswordPolicy() {
+  const pw = document.getElementById('password').value;
+  const ruleMin = document.getElementById('ruleMin');
+  const ruleUpper = document.getElementById('ruleUpper');
+  const ruleLower = document.getElementById('ruleLower');
+  const ruleDigit = document.getElementById('ruleDigit');
+  const rulePunctuation = document.getElementById('rulePunctuation');
+  const errorMsg = document.getElementById('pwErrorMsg');
+
+  const hasMin = pw.length >= 6;
+  const hasUpper = /[A-Z]/.test(pw);
+  const hasLower = /[a-z]/.test(pw);
+  const hasDigit = /[0-9]/.test(pw);
+  const hasPunctuation = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pw);
+
+  updatePolicyBadge(ruleMin, hasMin, 'Min 6 Karakter');
+  updatePolicyBadge(ruleUpper, hasUpper, 'Huruf Besar (A-Z)');
+  updatePolicyBadge(ruleLower, hasLower, 'Huruf Kecil (a-z)');
+  updatePolicyBadge(ruleDigit, hasDigit, 'Angka (0-9)');
+  updatePolicyBadge(rulePunctuation, hasPunctuation, 'Simbol (!@#$)');
+
+  if (hasMin && hasUpper && hasLower && hasDigit && hasPunctuation) {
+    if (errorMsg) errorMsg.style.display = 'none';
+    return true;
+  }
+  return false;
+}
+
+function updatePolicyBadge(el, isValid, label) {
+  if (!el) return;
+  if (isValid) {
+    el.className = 'policy-badge policy-valid';
+    el.innerText = '🟢 ' + label;
+  } else {
+    el.className = 'policy-badge policy-invalid';
+    el.innerText = '🔴 ' + label;
+  }
+}
+
+let userEditedDisplayName = false;
+
+document.getElementById('displayName')?.addEventListener('input', function() {
+  userEditedDisplayName = true;
+});
+
+function autoComputeDisplayName() {
+  if (userEditedDisplayName) return;
+  const given = document.getElementById('givenName')?.value.trim() || '';
+  const init = document.getElementById('initials')?.value.trim() || '';
+  const sn = document.getElementById('sn')?.value.trim() || '';
+
+  let initFormatted = init;
+  if (init && init.length <= 2 && !init.endsWith('.')) {
+    initFormatted = init + '.';
+  }
+
+  const combined = [given, initFormatted, sn].filter(Boolean).join(' ');
+  const dispInput = document.getElementById('displayName');
+  if (dispInput) {
+    dispInput.value = combined;
+  }
+}
+
+document.getElementById('createAccountForm')?.addEventListener('submit', function(e) {
+  const isValid = validatePasswordPolicy();
+  if (!isValid) {
+    e.preventDefault();
+    const errorMsg = document.getElementById('pwErrorMsg');
+    if (errorMsg) {
+      errorMsg.innerText = '⚠️ Password belum memenuhi syarat Zimbra! Harap lengkapi semua kriteria di atas (termasuk huruf besar, huruf kecil, angka 0-9, dan simbol !@#$).';
+      errorMsg.style.display = 'block';
+    }
+    const input = document.getElementById('password');
+    input.focus();
+    input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+});
+</script>
+
+<%- include('../partials/footer') %>
