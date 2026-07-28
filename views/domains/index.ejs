@@ -1,60 +1,103 @@
 <%- include('../partials/header') %>
 
-<div class="page-header">
-  <div class="header-title-group">
-    <h2>Domain & COS</h2>
-    <span class="badge"><%= domains.length %> Domain</span>
+<div class="detail-page-container">
+  <!-- Page Header -->
+  <div class="form-page-header" style="margin-bottom: 28px;">
+    <div class="header-title-with-badge">
+      <div class="form-title-group">
+        <h2>Domain & Class of Service (COS)</h2>
+        <p class="text-muted">Kelola domain email aktif dan profil kuota Class of Service Zimbra</p>
+      </div>
+      <div class="domain-header-badges">
+        <div class="queue-total-pill">
+          <span>🌐 <strong><%= domains.length %></strong> Domain Aktif</span>
+        </div>
+        <div class="queue-total-pill" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);">
+          <span>📦 <strong><%= cosList ? cosList.length : 0 %></strong> COS Profil</span>
+        </div>
+      </div>
+    </div>
   </div>
-</div>
 
-<!-- Domains Section -->
-<div class="section">
-  <h3>Daftar Domain Active</h3>
-  <div class="domain-grid">
+  <!-- Domains Section -->
+  <div class="section">
+    <div class="section-title-row" style="margin-bottom: 16px;">
+      <h3>Domain Email Aktif (<%= domains.length %>)</h3>
+    </div>
+
     <% if (domains && domains.length > 0) { %>
-      <% domains.forEach(domain => { %>
-        <a href="/accounts?domain=<%= encodeURIComponent(domain.name) %>" class="domain-card">
-          <div class="domain-icon">🌐</div>
-          <div class="domain-info">
-            <div class="domain-name"><%= domain.name %></div>
-            <span class="text-muted text-xs">Klik untuk lihat akun domain ini &rsaquo;</span>
+      <div class="domains-grid">
+        <% domains.forEach(domain => { %>
+          <div class="domain-card-enterprise">
+            <div class="domain-card-header">
+              <div class="domain-globe-icon">🌐</div>
+              <div class="domain-card-info">
+                <h4 class="domain-card-name"><%= domain.name %></h4>
+                <span class="status-badge status-active">🟢 Active Domain</span>
+              </div>
+            </div>
+            <div class="domain-card-footer">
+              <a href="/accounts?domain=<%= encodeURIComponent(domain.name) %>" class="btn btn-secondary btn-sm btn-block">
+                <span>🔍 Lihat Akun Domain Ini</span>
+                <span class="arrow">&rsaquo;</span>
+              </a>
+            </div>
           </div>
-        </a>
-      <% }); %>
+        <% }); %>
+      </div>
     <% } else { %>
-      <div class="empty-state card">
-        <p class="text-muted">Tidak ada domain terdeteksi.</p>
+      <div class="alias-empty-state">
+        <span class="empty-alias-icon">🌐</span>
+        <span>Tidak ada domain aktif ditemukan pada server Zimbra.</span>
       </div>
     <% } %>
   </div>
-</div>
 
-<!-- Class of Service Section -->
-<div class="section">
-  <h3>Class of Service (COS)</h3>
-  <div class="cos-list-container">
+  <!-- Class of Service (COS) Section -->
+  <div class="section" style="margin-top: 36px;">
+    <div class="section-title-row" style="margin-bottom: 16px;">
+      <h3>Class of Service (COS) Profiles (<%= cosList ? cosList.length : 0 %>)</h3>
+    </div>
+
     <% if (cosList && cosList.length > 0) { %>
-      <% cosList.forEach(cos => { %>
-        <div class="cos-card">
-          <div class="cos-header">
-            <span class="cos-badge">COS</span>
-            <strong class="cos-title"><%= cos.name %></strong>
-          </div>
-          <% if (cos.attrs) { %>
-            <div class="cos-attrs">
-              <% if (cos.attrs.zimbraMailQuota) { %>
-                <span class="cos-tag">Quota: <%= (parseInt(cos.attrs.zimbraMailQuota) / 1048576).toFixed(0) %> MB</span>
-              <% } %>
-              <% if (cos.attrs.description) { %>
-                <span class="text-muted"><%= cos.attrs.description %></span>
+      <div class="cos-grid-enterprise">
+        <% cosList.forEach(cos => { %>
+          <div class="cos-card-enterprise">
+            <div class="cos-card-top">
+              <div class="cos-badge-icon">📦</div>
+              <div class="cos-title-group">
+                <h4 class="cos-card-name"><%= cos.name %></h4>
+                <span class="cos-id-text">ID: <%= cos.id || 'Default' %></span>
+              </div>
+            </div>
+
+            <div class="cos-card-body">
+              <% if (cos.attrs) { %>
+                <div class="cos-quota-banner">
+                  <span class="cos-quota-label">💾 Batas Kuota Storage:</span>
+                  <span class="cos-quota-value">
+                    <% if (cos.attrs.zimbraMailQuota && parseInt(cos.attrs.zimbraMailQuota) > 0) { %>
+                      <strong><%= (parseInt(cos.attrs.zimbraMailQuota) / 1048576).toFixed(0) %> MB</strong>
+                    <% } else { %>
+                      <strong>Unlimited (Tanpa Batas)</strong>
+                    <% } %>
+                  </span>
+                </div>
+
+                <% if (cos.attrs.description) { %>
+                  <p class="cos-desc-text"><%= cos.attrs.description %></p>
+                <% } else { %>
+                  <p class="cos-desc-text text-muted">Profil Class of Service standar server Zimbra.</p>
+                <% } %>
               <% } %>
             </div>
-          <% } %>
-        </div>
-      <% }); %>
+          </div>
+        <% }); %>
+      </div>
     <% } else { %>
-      <div class="empty-state card">
-        <p class="text-muted">Tidak ada Class of Service ditemukan.</p>
+      <div class="alias-empty-state">
+        <span class="empty-alias-icon">📦</span>
+        <span>Tidak ada profil Class of Service (COS) ditemukan.</span>
       </div>
     <% } %>
   </div>
