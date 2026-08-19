@@ -16,7 +16,7 @@
 
     <form method="POST" action="/login" class="login-form-enterprise" id="loginForm">
       <div class="form-group-enterprise">
-        <label for="server">Zimbra Server URL</label>
+        <label for="server">Zimbra Server / Host</label>
         <div class="input-icon-wrapper">
           <span class="input-icon">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -25,11 +25,11 @@
               <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
             </svg>
           </span>
-          <input type="url" id="server" name="server"
-                 placeholder="https://zimbra.example.com:7071"
+          <input type="text" id="server" name="server"
+                 placeholder="mail.domain.com atau IP server"
                  value="<%= locals.savedServer || '' %>">
         </div>
-        <span class="hint-text">Contoh: https://mail.domain.com:7071 (Kosongkan jika local)</span>
+        <span class="hint-text">Cukup domain/IP (cth: mail.domain.com). HTTPS & port 7071 otomatis ditambahkan.</span>
       </div>
 
       <div class="form-group-enterprise">

@@ -12,9 +12,10 @@ router.get('/login', (req, res) => {
 
 router.post('/login', async (req, res) => {
   const { username, password, server, rememberServer } = req.body;
+  const serverInput = typeof server === 'string' ? server.trim() : '';
 
-  if (rememberServer && server) {
-    res.cookie('zimbraServer', server, {
+  if (rememberServer && serverInput) {
+    res.cookie('zimbraServer', serverInput, {
       maxAge: 365 * 24 * 60 * 60 * 1000,
       httpOnly: false,
       sameSite: 'lax',
@@ -29,12 +30,12 @@ router.post('/login', async (req, res) => {
   }
 
   try {
-    const zimbra = new ZimbraAdmin(server || undefined);
+    const zimbra = new ZimbraAdmin(serverInput || undefined);
     const authResult = await zimbra.auth(username, password);
 
     req.session.user = { username, accountId: authResult.accountId };
     req.session.zimbraToken = authResult.token;
-    req.session.zimbraServer = server || undefined;
+    req.session.zimbraServer = serverInput || undefined;
 
     res.redirect('/dashboard');
   } catch (err) {
