@@ -637,6 +637,13 @@ a {
   border-radius: 12px;
 }
 
+.account-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
 /* Status Badges */
 .status-badge {
   font-size: 11px;
@@ -1995,6 +2002,8 @@ a {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  min-width: 0;
+  flex: 1;
 }
 
 .detail-name {
@@ -2002,12 +2011,15 @@ a {
   font-weight: 800;
   color: var(--text);
   letter-spacing: -0.4px;
+  word-break: break-word;
 }
 
 .detail-email {
   font-size: 14.5px;
   font-weight: 600;
   color: var(--text-muted);
+  word-break: break-all;
+  overflow-wrap: anywhere;
 }
 
 .storage-usage-block {
@@ -2083,6 +2095,7 @@ a {
   font-size: 14px;
   font-weight: 800;
   color: var(--text);
+  word-break: break-all;
 }
 
 .form-card.compact {
@@ -2104,19 +2117,28 @@ a {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 16px;
+  gap: 12px;
+  padding: 12px 14px;
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 14px;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+  min-width: 0;
+}
+
+.alias-item:hover {
+  border-color: rgba(99, 102, 241, 0.3);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
 }
 
 .btn-remove-alias {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
   border-radius: 10px;
   border: 1px solid rgba(239, 68, 68, 0.2);
   background: rgba(239, 68, 68, 0.08);
@@ -2125,6 +2147,7 @@ a {
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   padding: 0;
   flex-shrink: 0;
+  margin-left: auto;
 }
 
 .btn-remove-alias:hover {
@@ -2136,23 +2159,32 @@ a {
 }
 
 .btn-remove-alias:active {
-  transform: translateY(0);
+  transform: scale(0.95);
 }
 
 .alias-email-badge {
   display: flex;
   align-items: center;
   gap: 10px;
+  min-width: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
 }
 
 .alias-icon {
   font-size: 16px;
+  line-height: 1;
+  flex-shrink: 0;
 }
 
 .alias-email-text {
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 700;
   color: var(--text);
+  word-break: break-all;
+  overflow-wrap: anywhere;
+  line-height: 1.4;
+  min-width: 0;
 }
 
 .alias-empty-state {
@@ -2171,6 +2203,7 @@ a {
 
 .empty-alias-icon {
   font-size: 18px;
+  flex-shrink: 0;
 }
 
 .alias-form-label {
@@ -2190,15 +2223,7 @@ a {
 .alias-input-row {
   display: flex;
   align-items: center;
-  gap: 18px;
-}
-
-@media (max-width: 580px) {
-  .alias-input-row {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 14px;
-  }
+  gap: 14px;
 }
 
 .btn-add-alias {
@@ -2211,6 +2236,88 @@ a {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+}
+
+@media (max-width: 580px) {
+  .detail-card {
+    padding: 18px 14px;
+    border-radius: 16px;
+  }
+
+  .detail-header {
+    gap: 14px;
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+  }
+
+  .detail-avatar {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+    border-radius: 14px;
+  }
+
+  .detail-name {
+    font-size: 18px;
+  }
+
+  .detail-email {
+    font-size: 13px;
+  }
+
+  .storage-usage-block {
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  .attr-row {
+    padding: 12px 14px;
+  }
+
+  .form-card.compact {
+    padding: 18px 14px;
+    border-radius: 16px;
+  }
+
+  .alias-item {
+    padding: 10px 12px;
+    gap: 10px;
+    border-radius: 12px;
+  }
+
+  .alias-email-badge {
+    gap: 8px;
+  }
+
+  .alias-email-text {
+    font-size: 13px;
+    line-height: 1.35;
+  }
+
+  .btn-remove-alias {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    min-height: 34px;
+    border-radius: 8px;
+  }
+
+  .alias-input-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .btn-add-alias {
+    width: 100%;
+    justify-content: center;
+    padding: 12px;
+  }
+
+  .btn-generate-pill {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 /* Enterprise Mail Queue Monitor Styling */
@@ -2789,4 +2896,34 @@ a {
   font-size: 14px;
   font-weight: 700;
   border-radius: 10px;
+}
+
+@media (max-width: 580px) {
+  .modal {
+    padding: 14px;
+  }
+
+  .modal-content {
+    padding: 20px 16px 18px;
+    border-radius: 18px;
+    max-width: 100%;
+  }
+
+  .modal-header h3 {
+    font-size: 16px;
+  }
+
+  .modal-footer {
+    flex-direction: column-reverse;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .modal-footer button,
+  .modal-footer .btn,
+  .modal-footer form {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
 }
