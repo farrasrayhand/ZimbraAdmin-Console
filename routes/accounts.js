@@ -22,7 +22,7 @@ router.get('/', async (req, res) => {
     if (query && query.trim()) {
       const qClean = query.trim().replace(/[\(\)\\]/g, '');
       if (qClean) {
-        searchQuery = `(|(mail=*${qClean}*)(cn=*${qClean}*)(displayName=*${qClean}*)(sn=*${qClean}*))`;
+        searchQuery = `(|(mail=*${qClean}*)(zimbraMailAlias=*${qClean}*)(zimbraMailDeliveryAddress=*${qClean}*)(cn=*${qClean}*)(displayName=*${qClean}*)(sn=*${qClean}*))`;
       }
     }
     if (statusFilter) {
@@ -52,6 +52,7 @@ router.get('/', async (req, res) => {
             quotaBytes,
             usedBytes,
             cosId: exactAcct.cosId || '',
+            aliases: exactAcct.aliases || [],
           }];
           result.total = 1;
         }

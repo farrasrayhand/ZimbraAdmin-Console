@@ -125,7 +125,26 @@
                     </div>
                     <div class="table-user-info">
                       <a href="/accounts/<%= encodeURIComponent(account.name) %>" class="table-user-email"><%= account.name %></a>
-                      <span class="table-user-name"><%= account.displayName || account.name %></span>
+                      <div class="table-user-sub">
+                        <span class="table-user-name"><%= account.displayName || account.name %></span>
+                        <% if (account.aliases && account.aliases.length > 0) { %>
+                          <span class="table-alias-badge" title="Alias: <%= account.aliases.join(', ') %>">
+                            🏷️ <%= account.aliases.length %> alias
+                          </span>
+                        <% } %>
+                        <% 
+                          let matchedAlias = null;
+                          if (query && account.aliases && account.aliases.length > 0) {
+                            const qCleanLower = query.trim().toLowerCase();
+                            matchedAlias = account.aliases.find(al => al.toLowerCase().includes(qCleanLower));
+                          }
+                        %>
+                        <% if (matchedAlias) { %>
+                          <span class="matched-alias-pill" title="Ditemukan via alias: <%= matchedAlias %>">
+                            Cocok alias: <%= matchedAlias %>
+                          </span>
+                        <% } %>
+                      </div>
                     </div>
                   </div>
                 </td>
@@ -161,6 +180,23 @@
               <div class="account-email"><%= account.name %></div>
               <div class="account-sub-row">
                 <span class="account-name text-muted"><%= account.displayName || account.name %></span>
+                <% if (account.aliases && account.aliases.length > 0) { %>
+                  <span class="account-alias-pill" title="Alias: <%= account.aliases.join(', ') %>">
+                    🏷️ <%= account.aliases.length %> alias
+                  </span>
+                <% } %>
+                <% 
+                  let mobileMatchedAlias = null;
+                  if (query && account.aliases && account.aliases.length > 0) {
+                    const qCleanLower = query.trim().toLowerCase();
+                    mobileMatchedAlias = account.aliases.find(al => al.toLowerCase().includes(qCleanLower));
+                  }
+                %>
+                <% if (mobileMatchedAlias) { %>
+                  <span class="matched-alias-pill" title="Ditemukan via alias: <%= mobileMatchedAlias %>">
+                    Cocok: <%= mobileMatchedAlias %>
+                  </span>
+                <% } %>
                 <span class="account-quota-pill">
                   💾 <%= account.usedQuotaMB %> MB <%= account.quotaMB > 0 ? '/ ' + account.quotaMB + ' MB' : '(COS)' %>
                 </span>
