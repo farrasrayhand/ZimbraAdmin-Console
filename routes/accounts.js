@@ -274,8 +274,18 @@ router.post('/:accountName/alias/add', async (req, res) => {
 });
 
 router.post('/:accountName/alias/remove', async (req, res) => {
-  const { alias } = req.body;
+  const { alias, confirmAlias } = req.body;
   const accountName = req.params.accountName;
+
+  if (!alias) {
+    req.session.error = 'Alamat alias tidak ditemukan';
+    return res.redirect(`/accounts/${encodeURIComponent(accountName)}`);
+  }
+
+  if (confirmAlias && confirmAlias.trim().toLowerCase() !== alias.trim().toLowerCase()) {
+    req.session.error = 'Konfirmasi alamat alias tidak cocok! Penghapusan dibatalkan.';
+    return res.redirect(`/accounts/${encodeURIComponent(accountName)}`);
+  }
 
   try {
     const client = getClient(req);

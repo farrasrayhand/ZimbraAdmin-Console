@@ -131,10 +131,14 @@
               <span class="alias-icon">📧</span>
               <span class="alias-email-text"><%= alias %></span>
             </div>
-            <form method="POST" action="/accounts/<%= encodeURIComponent(account.name) %>/alias/remove" style="display:inline;" onsubmit="return confirm('Hapus alias <%= alias %>?')">
-              <input type="hidden" name="alias" value="<%= alias %>">
-              <button type="submit" class="btn-remove-alias" title="Hapus Alias">&times;</button>
-            </form>
+            <button type="button" class="btn-remove-alias" onclick="showDeleteAliasModal('<%= alias %>')" title="Hapus alias <%= alias %>">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                <line x1="10" y1="11" x2="10" y2="17"></line>
+                <line x1="14" y1="11" x2="14" y2="17"></line>
+              </svg>
+            </button>
           </div>
         <% }); %>
       </div>
@@ -296,8 +300,68 @@
   </div>
 </div>
 
+<!-- Delete Alias Confirmation Modal -->
+<div id="deleteAliasModal" class="modal" style="display:none;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Konfirmasi Hapus Email Alias</h3>
+    </div>
+    <div class="modal-body">
+      <p class="danger-text">
+        Tindakan ini akan menghapus alias email secara permanen dari akun ini. Ketik alamat alias <strong id="targetAliasText" style="color: var(--danger); font-family: monospace; font-size: 14px;"></strong> di bawah ini untuk mengonfirmasi:
+      </p>
+      <div class="form-group" style="margin-top: 14px;">
+        <input type="text" id="confirmAliasInput" placeholder="Ketik persis alamat alias..." autocomplete="off" oninput="checkDeleteAliasConfirm()">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" onclick="closeDeleteAliasModal()">Batal</button>
+      <form id="deleteAliasForm" method="POST" action="/accounts/<%= encodeURIComponent(account.name) %>/alias/remove" style="display:inline;">
+        <input type="hidden" name="alias" id="deleteAliasTargetField">
+        <input type="hidden" name="confirmAlias" id="confirmAliasField">
+        <button type="submit" class="btn btn-danger" id="deleteAliasBtn" disabled>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+          <span>Hapus Alias</span>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
 <script>
 const ACCOUNT_NAME = '<%= account.name %>';
+let currentTargetAlias = '';
+
+function showDeleteAliasModal(alias) {
+  currentTargetAlias = alias;
+  document.getElementById('targetAliasText').innerText = alias;
+  document.getElementById('deleteAliasTargetField').value = alias;
+  document.getElementById('confirmAliasInput').value = '';
+  document.getElementById('confirmAliasField').value = '';
+  document.getElementById('deleteAliasBtn').disabled = true;
+  document.getElementById('deleteAliasModal').style.display = 'flex';
+  setTimeout(() => {
+    document.getElementById('confirmAliasInput').focus();
+  }, 100);
+}
+
+function closeDeleteAliasModal() {
+  document.getElementById('deleteAliasModal').style.display = 'none';
+  document.getElementById('confirmAliasInput').value = '';
+  document.getElementById('confirmAliasField').value = '';
+  document.getElementById('deleteAliasBtn').disabled = true;
+  currentTargetAlias = '';
+}
+
+function checkDeleteAliasConfirm() {
+  const input = document.getElementById('confirmAliasInput').value.trim();
+  const match = input.toLowerCase() === currentTargetAlias.toLowerCase();
+  document.getElementById('deleteAliasBtn').disabled = !match;
+  document.getElementById('confirmAliasField').value = match ? input : '';
+}
 
 function generateResetPassword() {
   const uppers = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';

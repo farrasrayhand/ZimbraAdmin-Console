@@ -2111,6 +2111,34 @@ a {
   transition: all 0.2s;
 }
 
+.btn-remove-alias {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  background: rgba(239, 68, 68, 0.08);
+  color: var(--danger);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.btn-remove-alias:hover {
+  background: var(--danger);
+  color: #ffffff;
+  border-color: var(--danger);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+}
+
+.btn-remove-alias:active {
+  transform: translateY(0);
+}
+
 .alias-email-badge {
   display: flex;
   align-items: center;
