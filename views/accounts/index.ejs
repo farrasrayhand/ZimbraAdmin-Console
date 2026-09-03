@@ -172,41 +172,49 @@
       <!-- Mobile Cards View (max-width: 767px) -->
       <div class="accounts-cards-view mobile-only">
         <% accounts.forEach(account => { %>
+          <% 
+            let mobileMatchedAlias = null;
+            if (query && account.aliases && account.aliases.length > 0) {
+              const qCleanLower = query.trim().toLowerCase();
+              mobileMatchedAlias = account.aliases.find(al => al.toLowerCase().includes(qCleanLower));
+            }
+          %>
           <a href="/accounts/<%= encodeURIComponent(account.name) %>" class="account-card">
-            <div class="account-avatar">
-              <%= account.name.charAt(0).toUpperCase() %>
-            </div>
-            <div class="account-info">
-              <div class="account-email"><%= account.name %></div>
-              <div class="account-sub-row">
-                <span class="account-name text-muted"><%= account.displayName || account.name %></span>
-                <% if (account.aliases && account.aliases.length > 0) { %>
-                  <span class="account-alias-pill" title="Alias: <%= account.aliases.join(', ') %>">
-                    🏷️ <%= account.aliases.length %> alias
-                  </span>
-                <% } %>
-                <% 
-                  let mobileMatchedAlias = null;
-                  if (query && account.aliases && account.aliases.length > 0) {
-                    const qCleanLower = query.trim().toLowerCase();
-                    mobileMatchedAlias = account.aliases.find(al => al.toLowerCase().includes(qCleanLower));
-                  }
-                %>
-                <% if (mobileMatchedAlias) { %>
-                  <span class="matched-alias-pill" title="Ditemukan via alias: <%= mobileMatchedAlias %>">
-                    Cocok: <%= mobileMatchedAlias %>
-                  </span>
-                <% } %>
-                <span class="account-quota-pill">
-                  💾 <%= account.usedQuotaMB %> MB <%= account.quotaMB > 0 ? '/ ' + account.quotaMB + ' MB' : '(COS)' %>
+            <!-- Card Header: Avatar, Info, Status & Arrow -->
+            <div class="account-card-header">
+              <div class="account-avatar">
+                <%= account.name.charAt(0).toUpperCase() %>
+              </div>
+              <div class="account-card-heading">
+                <div class="account-email"><%= account.name %></div>
+                <div class="account-name text-muted"><%= account.displayName || account.name %></div>
+              </div>
+              <div class="account-meta">
+                <span class="status-badge status-<%= account.status || 'active' %>">
+                  <%= (account.status || 'active').toUpperCase() %>
                 </span>
+                <span class="arrow">&rsaquo;</span>
               </div>
             </div>
-            <div class="account-meta">
-              <span class="status-badge status-<%= account.status || 'active' %>">
-                <%= (account.status || 'active').toUpperCase() %>
+
+            <!-- Matched Alias Banner (if search query matches an alias) -->
+            <% if (mobileMatchedAlias) { %>
+              <div class="matched-alias-banner">
+                <span class="matched-badge-tag">Cocok Alias</span>
+                <span class="matched-alias-text"><%= mobileMatchedAlias %></span>
+              </div>
+            <% } %>
+
+            <!-- Bottom Pills Row: Aliases & Storage Quota -->
+            <div class="account-card-footer-pills">
+              <% if (account.aliases && account.aliases.length > 0) { %>
+                <span class="account-alias-pill" title="Alias: <%= account.aliases.join(', ') %>">
+                  🏷️ <%= account.aliases.length %> alias
+                </span>
+              <% } %>
+              <span class="account-quota-pill">
+                💾 <%= account.usedQuotaMB %> MB <%= account.quotaMB > 0 ? '/ ' + account.quotaMB + ' MB' : '(COS)' %>
               </span>
-              <span class="arrow">&rsaquo;</span>
             </div>
           </a>
         <% }); %>
