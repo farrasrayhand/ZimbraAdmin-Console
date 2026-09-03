@@ -274,13 +274,28 @@
 <div id="deleteModal" class="modal" style="display:none;">
   <div class="modal-content">
     <div class="modal-header">
-      <h3>Konfirmasi Hapus Akun</h3>
+      <h3>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--danger);">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+          <line x1="12" y1="9" x2="12" y2="13"></line>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+        <span>Konfirmasi Hapus Akun</span>
+      </h3>
+      <button type="button" class="modal-close-btn" onclick="closeDeleteModal()" title="Tutup Modal">&times;</button>
     </div>
     <div class="modal-body">
-      <p class="danger-text">
-        Ketik alamat email lengkap <strong><%= account.name %></strong> di bawah untuk mengonfirmasi penghapusan:
+      <p class="modal-desc-text">
+        Tindakan ini akan menghapus seluruh data email, folder, dan akun pengguna secara permanen.
       </p>
-      <div class="form-group">
+      <div class="modal-target-box">
+        <span class="modal-target-label">Akun yang akan dihapus:</span>
+        <strong class="modal-target-value"><%= account.name %></strong>
+      </div>
+      <div class="form-group" style="margin-top: 16px;">
+        <label for="confirmEmailInput" style="display:block; font-size: 13px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">
+          Ketik ulang alamat email lengkap untuk konfirmasi:
+        </label>
         <input type="text" id="confirmEmailInput" placeholder="Ketik email untuk konfirmasi" autocomplete="off" oninput="checkDeleteConfirm()">
       </div>
     </div>
@@ -293,7 +308,7 @@
             <polyline points="3 6 5 6 21 6"></polyline>
             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
           </svg>
-          <span>Hapus Sekarang</span>
+          <span>Hapus Akun Sekarang</span>
         </button>
       </form>
     </div>
@@ -304,13 +319,27 @@
 <div id="deleteAliasModal" class="modal" style="display:none;">
   <div class="modal-content">
     <div class="modal-header">
-      <h3>Konfirmasi Hapus Email Alias</h3>
+      <h3>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--danger);">
+          <polyline points="3 6 5 6 21 6"></polyline>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+        </svg>
+        <span>Konfirmasi Hapus Email Alias</span>
+      </h3>
+      <button type="button" class="modal-close-btn" onclick="closeDeleteAliasModal()" title="Tutup Modal">&times;</button>
     </div>
     <div class="modal-body">
-      <p class="danger-text">
-        Tindakan ini akan menghapus alias email secara permanen dari akun ini. Ketik alamat alias <strong id="targetAliasText" style="color: var(--danger); font-family: monospace; font-size: 14px;"></strong> di bawah ini untuk mengonfirmasi:
+      <p class="modal-desc-text">
+        Tindakan ini akan menghapus alias email secara permanen dari akun ini.
       </p>
-      <div class="form-group" style="margin-top: 14px;">
+      <div class="modal-target-box">
+        <span class="modal-target-label">Email alias yang akan dihapus:</span>
+        <strong id="targetAliasText" class="modal-target-value"></strong>
+      </div>
+      <div class="form-group" style="margin-top: 16px;">
+        <label for="confirmAliasInput" style="display:block; font-size: 13px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">
+          Ketik ulang alamat alias di atas untuk konfirmasi:
+        </label>
         <input type="text" id="confirmAliasInput" placeholder="Ketik persis alamat alias..." autocomplete="off" oninput="checkDeleteAliasConfirm()">
       </div>
     </div>
@@ -324,7 +353,7 @@
             <polyline points="3 6 5 6 21 6"></polyline>
             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
           </svg>
-          <span>Hapus Alias</span>
+          <span>Hapus Alias Sekarang</span>
         </button>
       </form>
     </div>
@@ -345,7 +374,7 @@ function showDeleteAliasModal(alias) {
   document.getElementById('deleteAliasModal').style.display = 'flex';
   setTimeout(() => {
     document.getElementById('confirmAliasInput').focus();
-  }, 100);
+  }, 80);
 }
 
 function closeDeleteAliasModal() {
@@ -413,11 +442,26 @@ function closeDeleteModal() {
 }
 
 function checkDeleteConfirm() {
-  const input = document.getElementById('confirmEmailInput').value;
-  const match = input === ACCOUNT_NAME;
+  const input = document.getElementById('confirmEmailInput').value.trim();
+  const match = input.toLowerCase() === ACCOUNT_NAME.toLowerCase();
   document.getElementById('deleteBtn').disabled = !match;
   document.getElementById('confirmEmailField').value = match ? input : '';
 }
+
+// Backdrop Click to Close & Escape Key Listener
+window.addEventListener('click', (e) => {
+  const deleteModal = document.getElementById('deleteModal');
+  const deleteAliasModal = document.getElementById('deleteAliasModal');
+  if (e.target === deleteModal) closeDeleteModal();
+  if (e.target === deleteAliasModal) closeDeleteAliasModal();
+});
+
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeDeleteModal();
+    closeDeleteAliasModal();
+  }
+});
 </script>
 
 </div> <!-- End detail-page-container -->
