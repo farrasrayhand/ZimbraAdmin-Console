@@ -32,6 +32,11 @@ A modern, high-performance, **mobile-responsive web administration console** des
 - **Secure Password Resets**: Real-time password strength validation with policy-compliant **Random Password Generator**.
 - **Enforced Password Change**: Toggle `zimbraPasswordMustChange` to require users to set a new password on their next webmail/IMAP login.
 
+### 🚀 Delegated Authentication ("Login as User")
+- **Instant Webmail Access**: Seamlessly jump into any user's Zimbra Webmail inbox without needing their password, utilizing native Zimbra SOAP `DelegateAuthRequest` and `/service/preauth`.
+- **One-Click Mobile & Desktop Launcher**: Open mailboxes in a new isolated tab directly from the accounts table, mobile cards, or account detail overview card.
+- **Audit-Compliant & Secure**: Fully audited by Zimbra in `audit.log` (`DelegateAuth`) with temporary 1-hour auth token lifetimes and graceful error handling.
+
 ### 💾 Storage Quota & Class of Service (COS)
 - **Visual Storage Meters**: Dynamic color-coded progress bars (Green / Orange / Red) showing real-time mailbox utilization in Megabytes.
 - **COS Inheritance**: Full compatibility with Zimbra Class of Service defaults and individual quota overrides.

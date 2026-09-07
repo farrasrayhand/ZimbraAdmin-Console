@@ -159,6 +159,24 @@ router.post('/create', async (req, res) => {
   }
 });
 
+router.get('/:accountName/login-as', async (req, res) => {
+  const accountName = req.params.accountName;
+  try {
+    const client = getClient(req);
+    const authResult = await client.delegateAuth(accountName);
+    return res.redirect(authResult.loginUrl);
+  } catch (err) {
+    console.error('Login-as delegate error for ' + accountName + ':', err);
+    const errorMsg = err.reason || err.message || 'Gagal melakukan otentikasi delegasi untuk akun ini';
+    return res.status(500).render('accounts/login_as_error', {
+      title: 'Gagal Login as User - Zimbra Admin',
+      activeTab: 'accounts',
+      accountName,
+      errorMessage: errorMsg,
+    });
+  }
+});
+
 router.get('/:accountName', async (req, res) => {
   try {
     const client = getClient(req);

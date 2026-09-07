@@ -3048,3 +3048,162 @@ a {
     justify-content: center;
   }
 }
+
+/* ==========================================================================
+   Login as User (Delegated Authentication) Feature Styles
+   ========================================================================== */
+
+.table-actions-group {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.btn-login-as {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  white-space: nowrap;
+  text-decoration: none;
+  color: white;
+  background: var(--primary-gradient);
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-login-as:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+  color: white;
+}
+
+.account-card-header-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  border-radius: 12px;
+  transition: opacity 0.15s ease;
+}
+
+.account-card-header-link:active {
+  opacity: 0.75;
+}
+
+.account-card-header-link:hover .account-email {
+  color: var(--primary);
+}
+
+.account-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.btn-card-login-as {
+  flex: 1.25;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-weight: 700;
+  font-size: 12.5px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  white-space: nowrap;
+  text-decoration: none;
+  color: white;
+  background: var(--primary-gradient);
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-card-login-as:hover,
+.btn-card-login-as:active {
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+}
+
+.btn-card-manage {
+  flex: 0.75;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 12.5px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.detail-header-actions {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.btn-login-as-lg {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 13.5px;
+  padding: 10px 18px;
+  border-radius: 12px;
+  white-space: nowrap;
+  text-decoration: none;
+  color: white;
+  background: var(--primary-gradient);
+  box-shadow: var(--shadow-primary);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-login-as-lg:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
+  color: white;
+}
+
+@media (max-width: 640px) {
+  .detail-header {
+    flex-wrap: wrap;
+  }
+
+  .detail-header-actions {
+    flex: 1 1 100%;
+    width: 100%;
+    margin-top: 6px;
+    box-sizing: border-box;
+  }
+
+  .btn-login-as-lg {
+    width: 100%;
+    justify-content: center;
+    padding: 11px 16px;
+  }
+}
+
+@media (max-width: 360px) {
+  .account-card-actions {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .btn-card-login-as,
+  .btn-card-manage {
+    width: 100%;
+    flex: 1 1 auto;
+    padding: 9px 12px;
+  }
+}
+
