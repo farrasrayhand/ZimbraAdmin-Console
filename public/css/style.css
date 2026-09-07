@@ -221,6 +221,30 @@ a {
   }
 }
 
+@media (min-width: 768px) and (max-width: 991px) {
+  .header-content {
+    padding: 0 16px;
+    gap: 8px;
+  }
+  .brand-text .brand-subtitle {
+    display: none;
+  }
+  .desktop-nav {
+    gap: 2px;
+    padding: 3px;
+  }
+  .desktop-nav a {
+    padding: 6px 11px;
+    font-size: 13px;
+  }
+  .server-status-pill .server-name {
+    max-width: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
 .desktop-nav a {
   padding: 8px 16px;
   font-size: 13.5px;
@@ -1571,7 +1595,23 @@ a {
   gap: 12px;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 640px) and (max-width: 991px) {
+  .filter-form-grid {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .filter-dropdowns-group {
+    display: flex;
+    width: 100%;
+    gap: 10px;
+  }
+  .select-filter-wrapper {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+@media (min-width: 992px) {
   .filter-form-grid {
     flex-direction: row;
     align-items: center;
@@ -1714,22 +1754,45 @@ a {
 .desktop-only { display: block; }
 .mobile-only { display: none; }
 
-@media (max-width: 767px) {
+@media (max-width: 991px) {
   .desktop-only { display: none !important; }
-  .mobile-only { display: flex !important; flex-direction: column; gap: 10px; }
+  .mobile-only { display: flex !important; }
 }
 
-/* Enterprise Data Table */
+/* Accounts Cards View - Phone & Tablet Responsive Grid */
+.accounts-cards-view {
+  width: 100%;
+}
+
+@media (max-width: 639px) {
+  .accounts-cards-view {
+    display: flex !important;
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 991px) {
+  .accounts-cards-view {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 14px !important;
+  }
+}
+
+/* Enterprise Data Table (Desktop >= 992px) */
 .accounts-table-view {
   background: var(--card-bg);
   border: 1px solid var(--border);
   border-radius: 16px;
-  overflow: hidden;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   box-shadow: var(--shadow-sm);
 }
 
 .enterprise-table {
   width: 100%;
+  min-width: 780px;
   border-collapse: collapse;
   text-align: left;
 }
@@ -3174,7 +3237,7 @@ a {
   color: white;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .detail-header {
     flex-wrap: wrap;
   }
@@ -3182,7 +3245,7 @@ a {
   .detail-header-actions {
     flex: 1 1 100%;
     width: 100%;
-    margin-top: 6px;
+    margin-top: 8px;
     box-sizing: border-box;
   }
 
